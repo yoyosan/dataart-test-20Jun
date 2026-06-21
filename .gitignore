@@ -1,0 +1,32 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.env
+.venv
+.omo
+venv/
+*.db
+*.sqlite3
+.idea/
+.vscode/
+.omc
+*.swp
+*.swo
+*~
+.DS_Store
+.codegraph
+.pytest_cache
+
+# Environment files
+.env.local
+.env.*.local
+
+# Coverage
+.coverage
+htmlcov/
+
+# Logs
+*.log

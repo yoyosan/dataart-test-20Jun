@@ -1,0 +1,17 @@
+# Web Framework
+fastapi==0.137.2
+uvicorn[standard]==0.34.0
+
+# ORM & Database
+sqlmodel==0.0.22
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+
+# Validation
+pydantic[email]==2.10.3
+pydantic-settings==2.6.1
+
+# Testing (bonus)
+pytest==9.0.3
+pytest-asyncio==1.4.0
+httpx==0.28.1
