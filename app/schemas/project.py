@@ -1,7 +1,6 @@
 import uuid
 
-from pydantic import BaseModel, ConfigDict
-from sqlmodel import Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ProjectCreate(BaseModel):

@@ -1,5 +1,9 @@
-def test_create_project_user_not_found(client):
-    response = client.post(
+import pytest
+
+
+@pytest.mark.asyncio
+async def test_create_project_user_not_found(client):
+    response = await client.post(
         "/projects",
         json={
             "name": "Test Project 1",
@@ -10,12 +14,15 @@ def test_create_project_user_not_found(client):
     assert response.status_code == 404
 
 
-def test_create_project(client):
-    user = client.post(
-        "/users", json={"email": "test@example.com", "full_name": "Test User"}
+@pytest.mark.asyncio
+async def test_create_project(client):
+    user = (
+        await client.post(
+            "/users", json={"email": "test@example.com", "full_name": "Test User"}
+        )
     ).json()
 
-    response = client.post(
+    response = await client.post(
         "/projects",
         json={
             "name": "Test Project 1",
@@ -30,18 +37,21 @@ def test_create_project(client):
     assert "id" in data
 
 
-def test_list_projects(client):
-    user = client.post(
-        "/users", json={"email": "test@example.com", "full_name": "Test User"}
+@pytest.mark.asyncio
+async def test_list_projects(client):
+    user = (
+        await client.post(
+            "/users", json={"email": "test@example.com", "full_name": "Test User"}
+        )
     ).json()
-    client.post(
+    await client.post(
         "/projects",
         json={
             "name": "Test Project 1",
             "owner_id": user["id"],
         },
     )
-    client.post(
+    await client.post(
         "/projects",
         json={
             "name": "Test Project 2",
@@ -49,17 +59,20 @@ def test_list_projects(client):
         },
     )
 
-    response = client.get("/projects")
+    response = await client.get("/projects")
     assert response.status_code == 200
     assert len(response.json()) == 2
 
 
-def test_list_projects_pagination(client):
-    user = client.post(
-        "/users", json={"email": "test@example.com", "full_name": "Test User"}
+@pytest.mark.asyncio
+async def test_list_projects_pagination(client):
+    user = (
+        await client.post(
+            "/users", json={"email": "test@example.com", "full_name": "Test User"}
+        )
     ).json()
     for i in range(5):
-        client.post(
+        await client.post(
             "/projects",
             json={
                 "name": f"Test Project {i}",
@@ -67,16 +80,19 @@ def test_list_projects_pagination(client):
             },
         )
 
-    response = client.get("/projects?limit=2&offset=0")
+    response = await client.get("/projects?limit=2&offset=0")
     assert len(response.json()) == 2
 
 
-def test_list_projects_pagination_and_offset(client):
-    user = client.post(
-        "/users", json={"email": "test@example.com", "full_name": "Test User"}
+@pytest.mark.asyncio
+async def test_list_projects_pagination_and_offset(client):
+    user = (
+        await client.post(
+            "/users", json={"email": "test@example.com", "full_name": "Test User"}
+        )
     ).json()
     for i in range(5):
-        client.post(
+        await client.post(
             "/projects",
             json={
                 "name": f"Test Project {i}",
@@ -84,27 +100,33 @@ def test_list_projects_pagination_and_offset(client):
             },
         )
 
-    response = client.get("/projects/?limit=10&offset=4")
+    response = await client.get("/projects/?limit=10&offset=4")
     assert len(response.json()) == 1
 
 
-def test_get_project_not_found(client):
-    response = client.get("/projects/00000000-0000-0000-0000-000000000000")
+@pytest.mark.asyncio
+async def test_get_project_not_found(client):
+    response = await client.get("/projects/00000000-0000-0000-0000-000000000000")
     assert response.status_code == 404
 
 
-def test_get_project(client):
-    user = client.post(
-        "/users", json={"email": "test@example.com", "full_name": "Test User"}
+@pytest.mark.asyncio
+async def test_get_project(client):
+    user = (
+        await client.post(
+            "/users", json={"email": "test@example.com", "full_name": "Test User"}
+        )
     ).json()
-    project = client.post(
-        "/projects",
-        json={
-            "name": "Test Project 1",
-            "owner_id": user["id"],
-        },
+    project = (
+        await client.post(
+            "/projects",
+            json={
+                "name": "Test Project 1",
+                "owner_id": user["id"],
+            },
+        )
     ).json()
 
-    response = client.get(f"/projects/{project['id']}")
+    response = await client.get(f"/projects/{project['id']}")
     assert response.status_code == 200
     assert response.json()["name"] == "Test Project 1"

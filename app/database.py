@@ -1,16 +1,18 @@
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 
-from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlmodel import SQLModel
 
 from app.config import settings
 
-engine = create_engine(settings.database_url, pool_pre_ping=True)
+engine = create_async_engine(settings.database_url, pool_pre_ping=True)
 
 
-def get_db() -> Generator[Session, None, None]:
-    with Session(engine) as session:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSession(engine) as session:
         yield session
 
 
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+async def create_db_and_tables():
+    async with engine.begin() as db:
+        await db.run_sync(SQLModel.metadata.create_all)

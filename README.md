@@ -5,6 +5,10 @@ A small REST API built with FastAPI, Pydantic, and SQLModel for managing Users a
 ## Quick Start
 
 ```bash
+# Copy environment variables (optional for local development)
+cp .env.example .env
+
+# Start the API
 docker-compose up --build
 ```
 
@@ -16,9 +20,9 @@ Interactive docs: `http://localhost:8000/docs`
 
 | Component | Technology |
 |-----------|------------|
-| Framework | FastAPI |
+| Framework | FastAPI (async) |
 | Validation | Pydantic |
-| ORM | SQLModel / SQLAlchemy |
+| ORM | SQLModel / SQLAlchemy (async) |
 | Database | PostgreSQL 16 |
 | Container | Docker + Docker Compose |
 
@@ -27,7 +31,7 @@ Interactive docs: `http://localhost:8000/docs`
 ```
 app/
 ├── config.py              # Pydantic BaseSettings (env vars)
-├── database.py            # Engine, session factory, dependency injection
+├── database.py            # Async engine, session factory, dependency injection
 ├── main.py                # FastAPI app, lifespan, router registration
 ├── models/
 │   ├── user.py            # User table (SQLModel)
@@ -46,8 +50,8 @@ app/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/users` | Create a user (validates email uniqueness) |
-| `GET` | `/users` | List users (pagination: `limit`, `offset`) |
+| `POST` | `/users` | Create a user (validates email uniqueness, max length) |
+| `GET` | `/users` | List users (pagination: `limit` 1-100, `offset` ≥ 0) |
 | `GET` | `/users/{id}` | Get user by ID |
 | `DELETE` | `/users/{id}` | Delete user (rejects if user has projects) |
 | `GET` | `/users/{id}/projects` | List projects owned by user |
@@ -56,8 +60,8 @@ app/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/projects` | Create a project (validates owner exists) |
-| `GET` | `/projects` | List projects (pagination: `limit`, `offset`) |
+| `POST` | `/projects` | Create a project (validates owner exists, max length) |
+| `GET` | `/projects` | List projects (pagination: `limit` 1-100, `offset` ≥ 0) |
 | `GET` | `/projects/{id}` | Get project by ID |
 
 ## Example Usage
@@ -84,7 +88,7 @@ curl http://localhost:8000/users/<user-uuid>/projects
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 
 # Run tests
 pytest -v
@@ -99,12 +103,16 @@ Environment variables (set in `.env` or `docker-compose.yml`):
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | Required |
+| `DATABASE_URL` | PostgreSQL connection string (asyncpg) | Required |
 
 ## Design Decisions
 
+- **Async SQLAlchemy**: Non-blocking DB operations for better concurrency
 - **Dependency Injection**: Database sessions injected via FastAPI's `Depends`
 - **Separation of Concerns**: Models (DB), Schemas (API), Routers (endpoints)
+- **Input Validation**: Pydantic schemas enforce max_length, email format, pagination bounds
 - **Delete Protection**: Users with projects cannot be deleted (returns 409)
+- **Explicit Queries**: No lazy loading — all queries are explicit to avoid N+1 patterns
 - **UUID Primary Keys**: Distributed-friendly, no sequential ID leaks
 - **Typed Config**: Pydantic BaseSettings validates configuration at startup
+- **OpenAPI Documentation**: All endpoints documented with summaries, descriptions, and error responses in `/docs`

@@ -1,7 +1,6 @@
 import uuid
 
-from pydantic import BaseModel, ConfigDict, EmailStr
-from sqlmodel import Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserCreate(BaseModel):

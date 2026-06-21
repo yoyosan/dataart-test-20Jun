@@ -67,7 +67,7 @@ Implement a small REST API using FastAPI, Pydantic, and SQLModel/SQLAlchemy.
 ### Bonus (Optional)
 
 - [x] Dependency injection for DB sessions
-- [ ] Async SQLAlchemy/SQLModel
+- [x] Async SQLAlchemy/SQLModel
 - [x] Tests (pytest)
 - [x] OpenAPI tags & descriptions
 

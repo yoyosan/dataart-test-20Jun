@@ -20,7 +20,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql+psycopg2://appuser:apppassword@db:5432/appdb
+      DATABASE_URL: postgresql+asyncpg://appuser:apppassword@db:5432/appdb
     depends_on:
       db:
         condition: service_healthy
